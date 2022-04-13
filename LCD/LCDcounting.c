@@ -28,13 +28,14 @@ void main(void) {
     ANSEL = ANSELH = 0;
     LCD_Clear();
     TRISBbits.TRISB0 = 1;
+    IOCBbits.IOCB0=1;
     INTCONbits.RBIE=1;
     INTCONbits.RBIF=0;
     INTCONbits.GIE=1;
-    INTCONbits.PEIE=1;
-    IOCB = 1;
+//    OPTION_REGbits.INTEDG = 1;
+//    OPTION_REGbits.nRBPU = 0; 
     while(1){
-        if(!PORTBbits.RB0){a++;__delay_ms(300);}
+//        if(!PORTBbits.RB0){a++;}
         LCD_Init();
         sprintf(s,"COUNT: ");
         LCD_Set_Cursor(1,1);  
@@ -45,9 +46,9 @@ void main(void) {
     }
 }
 
-void __interrupt() srt(){
-    if(INTCONbits.RBIE&INTCONbits.RBIF){
+void __interrupt() isr(void){
+    if(INTCONbits.RBIE&&INTCONbits.RBIF){
         if(!PORTBbits.RB0){a++;}
-        INTCONbits.RBIF=0;
+        INTCONbits.RBIF=0;  
     }
 }
