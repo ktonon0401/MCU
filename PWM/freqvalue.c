@@ -72,7 +72,7 @@ void PWM_Duty(unsigned int duty){
 }
 
 void ADC_Initialize(){
-    ADCON0 = 0b01000001; //ADC ON and Fosc/16 is selected
+    ADCON0 = 0b01000011; //ADC ON and Fosc/16 is selected
     ADCON1 = 0b11000000; // Internal reference voltage is selected
 }
 
