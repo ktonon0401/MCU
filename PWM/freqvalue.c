@@ -25,6 +25,8 @@
 
 int adc_value;
 long PWM_freq=5000;
+unsigned int pul=20;
+char s[20];
 
 void PWM_Initialize();
 void PWM_Duty(unsigned int duty);
@@ -55,7 +57,7 @@ void main(void){
 
 void PWM_Initialize(){
     PR2 = (_XTAL_FREQ/(PWM_freq*4*TMR2PRESCALE)) - 1;
-    CCP1CONbits.CCP1M3 = CCP1CONbits.CCP1M2 = 1; // Configure the CCP1 module
+    CCP1CONbits.CCP1M3 = CCP1CONbits.CCP1M2 = CCP1CONbits.CCP1M1 = CCP1CONbits.CCP1M0 = 1; // Configure the CCP1 module
     T2CONbits.T2CKPS1 = 0; T2CONbits.T2CKPS0 = 1; T2CONbits.TMR2ON = 1; // Configure the Timer module
     TRISCbits.TRISC2 = 0;
 }
@@ -66,13 +68,13 @@ void PWM_Duty(unsigned int duty){
         CCP1CONbits.DC1B1 = duty&1; // Store the 1st bit DC1B1
         CCP1CONbits.DC1B0 = duty&2; // Store the 0nd bit DC1B0
         CCPR1L = duty>>2; // Store the remaining 8 bit
-        CCP1CONbits.P1M1 = 0; CCP1CONbits.P1M0 = 0;
+//        CCP1CONbits.P1M1 = 0; CCP1CONbits.P1M0 = 0;
     }
 }
 
 void ADC_Initialize(){
-    ADCON0 = 0b01000011; //ADC ON and Fosc/16 is selected
-    ADCON1 = 0b10100000; // Internal reference voltage is selected
+    ADCON0 = 0b01000011; //ADC ON and Fosc/8 is selected
+    ADCON1 = 0b10110000; // Internal reference voltage is selected
 }
 
 unsigned int ADC_Read(unsigned char channel){
