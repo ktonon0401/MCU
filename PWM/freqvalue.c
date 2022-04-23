@@ -25,8 +25,6 @@
 
 int adc_value;
 long PWM_freq=5000;
-unsigned int pul=20;
-char s[20];
 
 void PWM_Initialize();
 void PWM_Duty(unsigned int duty);
@@ -36,6 +34,7 @@ unsigned int ADC_Read(unsigned char channel);
 void main(void){
     LCD_Clear();
     TRISAbits.TRISA0 = TRISAbits.TRISA4 = 1;
+    TRISCbits.TRISC2 = 0;
     ADC_Initialize(); //Initialize ADC Module
     PWM_Initialize(); // This sets the PWM frequency of PWM1
     do{
