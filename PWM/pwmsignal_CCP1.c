@@ -35,29 +35,21 @@ unsigned int ADC_Read(unsigned char channel);
 
 void main(void){
     LCD_Clear();
-    TRISAbits.TRISA0 = TRISAbits.TRISA4 = 1;
+    TRISAbits.TRISA0 = 1;
     TRISCbits.TRISC2 = 0;
     ADC_Initialize(); //Initialize ADC Module
     PWM_Initialize(); // This sets the PWM frequency of PWM1
     do{
-        adc_value = ADC_Read(4); //Reading Analog Channel 0
+        adc_value = ADC_Read(0); //Reading Analog Channel 0
         PWM_Duty(adc_value);
         __delay_ms(50);
-        
-//        LCD_Init();
-//        sprintf(s,"FREQ: %d",adc_value);
-//        LCD_Set_Cursor(1,1);
-//        LCD_Write_String(s);
-//        
-//        sprintf(s,"     HCMUTE\0");
-//        LCD_Set_Cursor(2,1);
-//        LCD_Write_String(s);
     }while(1);
 }
 
 void PWM_Initialize(){
     PR2 = (_XTAL_FREQ/(PWM_freq*4*TMR2PRESCALE)) - 1;
-    CCP1CONbits.CCP1M3 = CCP1CONbits.CCP1M2 = CCP1CONbits.CCP1M1 = CCP1CONbits.CCP1M0 = 1; // Configure the CCP1 module
+    CCP1CONbits.CCP1M3 = CCP1CONbits.CCP1M2 = 1;
+    CCP1CONbits.CCP1M1 = CCP1CONbits.CCP1M0 = 0; // Configure the CCP1 module
     T2CONbits.T2CKPS1 = 0; T2CONbits.T2CKPS0 = 1; T2CONbits.TMR2ON = 1; // Configure the Timer module
     TRISCbits.TRISC2 = 0;
 }
@@ -68,18 +60,17 @@ void PWM_Duty(unsigned int duty){
         CCP1CONbits.DC1B1 = duty&1; // Store the 1st bit DC1B1
         CCP1CONbits.DC1B0 = duty&2; // Store the 0nd bit DC1B0
         CCPR1L = duty>>2; // Store the remaining 8 bit
-//        CCP1CONbits.P1M1 = 0; CCP1CONbits.P1M0 = 0;
     }
 }
 
 void ADC_Initialize(){
-    ADCON0 = 0b01000011; //ADC ON and Fosc/8 is selected
-    ADCON1 = 0b10110000; // Internal reference voltage is selected
+    ADCON0 = 0b01000001; //ADC ON and Fosc/8 is selected
+    ADCON1 = 0b10000000; // Internal reference voltage is selected
 }
 
 unsigned int ADC_Read(unsigned char channel){
     ADCON0 &= 0x11000101; //Clearing the Channel Selection Bits
-    ADCON0 |= channel<<3; //Setting the required Bits
+    ADCON0 |= channel<<2; //Setting the required Bits
     __delay_ms(2); //Acquisition time to charge hold capacitor
     ADCON0bits.GO_nDONE = 1; //Initializes A/D Conversion
     while(ADCON0bits.GO_nDONE); //Wait for A/D Conversion to complete
